@@ -1,12 +1,19 @@
 <!DOCTYPE html>
-{% load socialaccount %}
 <html lang="en">
-    <body>
-        <h1>SGP - LOGIN </h1>
-        {% if user.is_authenticated %}
-            <p>Welcome, You are logged in as {{ user.username }}</p>
-        {% else %}
-            <a href="{% provider_login_url 'google' %}">Login With Google</a>
-        {% endif %}
-    </body>
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SGP-Login</title>
+  </head>
+  <body>
+    {% block content %} {% endblock content %}
+  </body>
 </html>
