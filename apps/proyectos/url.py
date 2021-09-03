@@ -21,7 +21,6 @@ from django.urls import path,include
 from apps.proyectos.views import index
 
 urlpatterns = [
-    #url(r'^$', index),
     path('',index),
 
 ]

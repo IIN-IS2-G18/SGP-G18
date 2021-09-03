@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% block extraheader %}
+    {% endblock %}
+
+    <meta charset="UTF-8">
+    <title>{% block title %}Title {% endblock %}</title>
+</head>
+
+<body>
+
+{% block navbar %}
+    <div class="bs-docs-section clearfix">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="bs-component">
+                 <nav class="navbar navbar-default">
+                     <div class="container-fluid">
+                        <div class="navbar-header">
+                          <a class="navbar-brand" href="#">SGP-G18</a>
+                        </div>
+                       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                         <ul class="nav navbar-nav">
+                            <li class="dropdown">
+                              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Proyectos <span class="caret"></span></a>
+                              <ul class="dropdown-menu" role="menu">
+                               <li><a href="{#}">Crear</a></li>
+                               <li><a href="{#}">Listar</a></li>
+                              </ul>
+                            </li>
+
+                         </ul>
+                         <ul class="nav navbar-nav navbar-right">
+                             <li class="dropdown">
+                              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Opciones<span class="caret"></span></a>
+                              <ul class="dropdown-menu" role="menu">
+                                 <li><a href="{#}">Salir</a></li>
+                              </ul>
+                            </li>
+                         </ul>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+              </div>
+          </div>
+      </div>
+
+   {% endblock %}
+
+    {% block header %}
+    <h4>Este es el bloque del header base</h4>
+    {% endblock %}
+
+    {% block content %}
+        <h5>Este es el contenido del archivo base</h5>
+    {% endblock %}
+
+    {% block footer %}
+        <h5>Footer del archivo base</h5>
+    {% endblock %}
+
+    {% block extrajs %}
+    {% endblock %}
+</body>
+</html>

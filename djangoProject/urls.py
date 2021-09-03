@@ -20,8 +20,6 @@ from .views import Home
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
-    #path('',TemplateView.as_view(template_name="index.html")),
     path('', Home.as_view(), name="home"),
-    #path('logout', LogoutView.as_view()),
-    path('index/', include('apps.proyectos.url')),
+    path('proyectos/', include('apps.proyectos.url'),name="proyectos"),
 ]
