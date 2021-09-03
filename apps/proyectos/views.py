@@ -13,7 +13,7 @@ def proyecto_view(request):
         form = ProyectoForm(request.POST)
         if form.is_valid():
             form.save()
-        return redirect('proyectos:index')
+        return redirect('index')
     else:
         form = ProyectoForm()
     return render(request, 'proyectos/proyecto_form.html', {'form': form})
