@@ -3,17 +3,17 @@
 {% block content %}
 
 <div class="container" style="text-align: center; padding-top: 10%;">
-  <h1>SGP-Login</h1>
+  <h1>SGP</h1>
 
   <br /><br />
 
   {% if user.is_authenticated %}
-    <h3>Welcome {{ user.username }} !!!</h3>
+    <h3>Bienvenido {{ user.username }} </h3>
     <br /><br />
-    <a href="{% url 'account_logout' %}" class="btn btn-danger">Logout</a>
+    <a href="{% url 'account_logout' %}"></a>
     {% else %}
     <a href="{% provider_login_url 'google'%}">Login with Google</a>
   {% endif %}
-</div>
 
+</div>
 {% endblock content %}
