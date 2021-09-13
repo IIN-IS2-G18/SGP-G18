@@ -1,19 +1,86 @@
+
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
-    />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SGP-Login</title>
-  </head>
-  <body>
-    {% block content %} {% endblock content %}
-  </body>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SGP-G18</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/hover-min.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+<style>
+
+    .header {
+      overflow: hidden;
+      #background-color:#5AB9EA;
+      #background-color:#2E9CCA;
+      #background-color:#1E88E5;
+
+      background-color:#024e82!important;
+      padding: 0 55px!important;
+    }
+
+    .header a {
+      float: left;
+      color: white!important;
+      text-align: center;
+      padding: 10px 15px;
+      text-decoration: none;
+      font-size: 20px;
+      line-height: 20px;
+      border-radius: 4px;
+
+
+    }
+    .header a.logo {
+        padding: 10px 20px;
+    }
+    .header-right {
+      float: right!important;
+      padding: 20px 0!important;
+    }
+    @media screen and (max-width: 500px) {
+        .header a {
+            float: none;
+            display: block;
+            text-align: left;
+        }
+
+        .header-right {
+            float: none;
+        }
+    }
+
+</style>
+</head>
+
+<body
+        style="background-color:white;
+        width:100vw;
+        min-height: 250vh;"
+>
+  <div class="header">
+      <div class="header-right" >
+
+            <a href="{% url 'home' %}" class="button hvr-float-shadow" >
+                <i class="material-icons left">home</i>
+                Home
+            </a>
+          <a href="{% url 'account_logout' %}" class="button hvr-hang"
+            style="text-decoration: none; font-size: 1.1em;"
+          >
+              Logout
+          </a>
+      </div>
+  </div>
+ {% block content %}
+    {% endblock %}
+</body>
 </html>
