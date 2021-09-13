@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 
 # Create your views here.
 from apps.proyectos.forms import ProyectoForm
+from apps.proyectos.models import Proyecto
 
 
 def index(request):
@@ -17,3 +18,8 @@ def proyecto_view(request):
     else:
         form = ProyectoForm()
     return render(request, 'proyectos/proyecto_form.html', {'form': form})
+
+def proyecto_list(request):
+    proyecto = Proyecto.objects.all()
+    contexto = {'proyectos':proyecto}
+    return render(request, 'proyectos/proyectos_list.html', contexto)
