@@ -15,15 +15,13 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/venv" />
-      <excludeFolder url="file://$MODULE_DIR$/venvDES" />
-      <excludeFolder url="file://$MODULE_DIR$/venvPROD" />
     </content>
-<<<<<<< HEAD
-    <orderEntry type="jdk" jdkName="Python 3.9 (venv)" jdkType="Python SDK" />
-=======
-    <orderEntry type="jdk" jdkName="Python 3.8 (SGP-G18) (2)" jdkType="Python SDK" />
->>>>>>> desarrollo
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+  <component name="PyDocumentationSettings">
+    <option name="format" value="PLAIN" />
+    <option name="myDocStringFormat" value="Plain" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Django" />
