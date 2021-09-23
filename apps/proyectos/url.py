@@ -16,10 +16,6 @@ Including another URLconf
 from django.urls import path
 
 
-from apps.proyectos.views import index, proyecto_view
-
 urlpatterns = [
-    path('', index, name='index'),
-    path('crear/', proyecto_view, name='proyeto_crear'),
 
 ]

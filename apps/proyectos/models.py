@@ -20,6 +20,8 @@ class Proyecto(models.Model):
     fechaInicio = models.DateField()
     fechaFin = models.DateField()
     estado = models.CharField(max_length=15, choices=ESTADOS)
+    numSprint = models.IntegerField(default=0)
+
 
 #Permisos de un proyecto
 class Meta:
@@ -44,8 +46,12 @@ class Meta:
         ('borrar_us','Borrar US'),
     )
 
+    def str(self):
+        return "{}".format(self.nombre)
+
     #Cantidad de horas de trabajo diario de cada usuario
     class usuario_hora_trabajo(models.Model):
         user = models.ForeignKey(User, on_delete=models.CASCADE)
         proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE)
         horas = models.PositiveIntegerField(null=True)
+
