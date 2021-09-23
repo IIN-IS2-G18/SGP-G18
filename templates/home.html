@@ -1,19 +1,8 @@
-{% extends 'index.html' %} {% load socialaccount %}
+{% extends 'base.html' %} {% load socialaccount %}
 
 {% block content %}
+{% if user.is_authenticated %}
+    {% include 'proyecto/snippets/proyecto_snippets.html' %}
+{% endif %}
 
-<div class="container" style="text-align: center; padding-top: 10%;">
-  <h1>SGP</h1>
-
-  <br /><br />
-
-  {% if user.is_authenticated %}
-    <h3>Bienvenido {{ user.username }} </h3>
-    <br /><br />
-    <a href="{% url 'account_logout' %}"></a>
-    {% else %}
-    <a href="{% provider_login_url 'google'%}">Login with Google</a>
-  {% endif %}
-
-</div>
-{% endblock content %}
+{% endblock %}

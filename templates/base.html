@@ -1,13 +1,12 @@
-
-{% load static %}
+{% load static %} {% load socialaccount %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>SGP-G18</title>
+    <title>SGP-18</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/hover-min.css' %}">
@@ -66,20 +65,31 @@
         width:100vw;
         min-height: 250vh;"
 >
-  <div class="header">
+
+<div class="header">
       <div class="header-right" >
 
             <a href="{% url 'home' %}" class="button hvr-float-shadow" >
                 <i class="material-icons left">home</i>
                 Home
             </a>
+            <a href="/gestionUser/mensaje=''" class="button hvr-float-shadow">
+                <i class="material-icons left">people</i>
+                Gestionar Usuarios
+            </a>
+            <a> Usuario:<b>{{ user.username}}</b> </a>
+          {% if user.is_authenticated %}
           <a href="{% url 'account_logout' %}" class="button hvr-hang"
             style="text-decoration: none; font-size: 1.1em;"
           >
-              Logout
+              Cerrar Sesión
           </a>
+           {% else %}
+          <a href="{% provider_login_url 'google'%}">Login with Google</a>
+          {% endif %}
       </div>
-  </div>
+</div>
+
  {% block content %}
     {% endblock %}
 </body>

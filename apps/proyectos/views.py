@@ -17,3 +17,4 @@ def proyecto_view(request):
     else:
         form = ProyectoForm()
     return render(request, 'proyectos/proyecto_form.html', {'form': form})
+
