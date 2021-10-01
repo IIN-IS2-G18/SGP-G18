@@ -66,6 +66,19 @@ class ProyectoManager(models.Manager):
                 """
                 return self.estado
 
+            # Se agrega para simplicar llamada a funciones
+            objects = models.Manager()
+            projects = ProyectoManager()
+
+            def __str__(self):
+                return "{}".format(self.nombre)
+
+            def get_nombre(self):
+                """
+                Retorna nombre del proyecto
+                """
+                return self.nombre
+
 
 
 
