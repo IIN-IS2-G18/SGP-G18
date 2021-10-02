@@ -2,12 +2,32 @@
 
 {% block content %}
 
-<form action="" method="post">
-    {% csrf_token %}
-    <table>
-    {{ form.as_table }}
-    </table>
-    <input type="submit" value="Submit" />
+<div class="container">
+        <h4 style="text-align: center">Crear Proyecto</h4>
+        <form action="" method="post">
+            {% csrf_token %}
 
-</form>
+            <p><div>
+                <label style="color: black" for="nombre">Nombre del Proyecto:</label>
+                <input type="text" id="nombre" name="nombre" required>
+            </div></p>
+            <p><div>
+                <label for="descripcion">Descripcion:</label>
+                <textarea id="descripcion" rows="1" cols="50" name="descripcion" required></textarea>
+            </div></p>
+            <p><div>
+                <label for="fechaini">Fecha de Inicio:</label>
+                <input type="date" id="fechaini" name="fechaini" required>
+            </div></p>
+            <p><div>
+                <label for="fechafin">Fecha de Fin:</label>
+                <input type=date id="fechafin" name="fechafin" required>
+            </div></p>
+            <button type="submit" class="btn-small blue darken-3 right">Guardar
+             <i class="material-icons left">add_circle</i></button>
+        </form>
+
+
+</section>
+	</div>
 {% endblock %}
