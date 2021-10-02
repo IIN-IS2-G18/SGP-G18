@@ -1,7 +1,7 @@
 from django.db import models
 from django.dispatch import receiver
 from django.core.exceptions import FieldError
-
+from django.contrib.auth.models import User
 
 class ProyectoManager(models.Manager):
     def crear(self, **kwargs):
@@ -29,9 +29,7 @@ class ProyectoManager(models.Manager):
 
         proyecto.save()
 
-
-
-        class Proyecto(models.Model):
+class Proyecto(models.Model):
             """
             El model guarda informacion de todos los proyectos del sistema.
 
