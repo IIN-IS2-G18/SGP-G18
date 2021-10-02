@@ -2,7 +2,6 @@ from django.forms import ModelForm
 from .models import Proyecto
 from django.http import JsonResponse
 
-
 class JsonableResponseMixin:
     """
     Mixin to add JSON support to a form.
@@ -37,12 +36,8 @@ class ProyectoForm(JsonableResponseMixin,ModelForm):
         labels = {
             'nombre': 'Nombre',
             'descripcion': 'Descripcion',
+            'equipo' : 'Equipo',
             'fechaInicio': 'Fecha de Inicio',
             'fechaFin': 'Fecha de Finalizacion',
-        }
-        widgets = {
-            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
-            'descripcion': forms.TextInput(attrs={'class': 'form-control'}),
-            'fechaInicio': forms.DateInput,
-            'fechaFin': forms.DateInput,
+            'estado' : 'Estado'
         }

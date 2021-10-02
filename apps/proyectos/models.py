@@ -3,6 +3,13 @@ from django.dispatch import receiver
 from django.core.exceptions import FieldError
 from django.contrib.auth.models import User
 
+class Equipo(models.Model):
+    nombre = models.CharField(max_length=20)
+    usuarios = models.ManyToManyField(User)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
 class ProyectoManager(models.Manager):
     def crear(self, **kwargs):
         """
@@ -11,7 +18,8 @@ class ProyectoManager(models.Manager):
         :returns:  Nada si el proyecto no se creo sino la instancia del nuevo proyecto.
         """
         # Se verifica si se pasaron  los campos necesarios
-        requerimientos = ['nombre', 'descripcion', 'equipo', 'fecha_inicio', 'fecha_fin', 'estado']
+        #requerimientos = ['nombre', 'descripcion', 'equipo', 'fecha_inicio', 'fecha_fin', 'estado']
+        requerimientos = ['nombre', 'descripcion', 'fecha_inicio', 'fecha_fin']
 
         for requerimiento in requerimientos:
             if requerimiento not in kwargs.keys():
@@ -30,53 +38,51 @@ class ProyectoManager(models.Manager):
         proyecto.save()
 
 class Proyecto(models.Model):
+        """
+        El model guarda informacion de todos los proyectos del sistema.
+
+        :param id: ID unico
+        :param nombre: Nombre del Proyecto
+        :param descripcion: Descripcion del proyecto
+        :param equipo: Personas que realizan el proyecto
+        :param fecha_inicio: Fecha de Inicio del Proyecto
+        :param fecha_fin: Fecha de finalizacion del Proyecto
+        :param estado: Estado del proyecto
+        """
+        # Estados de un proyecto
+        ACTIVO = 'ACTIVO'
+        CULMINADO = 'CULMINADO'
+        CANCELADO = 'CANCELADO'
+        ESTADOS = [(ACTIVO, 'Activo'),
+                    (CULMINADO, 'Culminado'),
+                    (CANCELADO, 'Cancelado')
+                    ]
+
+        nombre = models.TextField('Nombre del Proyecto')
+        descripcion = models.TextField('Descripcion', max_length=181)
+        equipo = models.ForeignKey(Equipo, on_delete=models.CASCADE,)
+        fecha_inicio = models.DateField(null=True)
+        fecha_fin = models.DateField(null=True)
+        estado = models.CharField(max_length=10, choices=ESTADOS, blank=True) # Choices de la lista de estados
+
+        def get_state(self):
             """
-            El model guarda informacion de todos los proyectos del sistema.
-
-            :param id: ID unico
-            :param nombre: Nombre del Proyecto
-            :param descripcion: Descripcion del proyecto
-            :param equipo: Personas que realizan el proyecto
-            :param fecha_inicio: Fecha de Inicio del Proyecto
-            :param fecha_fin: Fecha de finalizacion del Proyecto
-            :param estado: Estado del proyecto
+            :return: retorna el estado del proyecto
             """
-            # Estados de un proyecto
-            ACTIVO = 'ACTIVO'
-            CULMINADO = 'CULMINADO'
-            CANCELADO = 'CANCELADO'
-            ESTADOS = [(ACTIVO, 'Activo'),
-                       (CULMINADO, 'Culminado'),
-                       (CANCELADO, 'Cancelado')
-                       ]
+            return self.estado
 
-            id = models.AutoField(primary_key=True)
-            nombre = models.TextField('Nombre del Proyecto')
-            descripcion = models.TextField('Descripcion', max_length=180)
-            equipo = models.ManyToManyField(User, related_name='mm_proyecto_equipo')
-            fecha_inicio = models.DateField(null=True)
-            fecha_fin = models.DateField(null=True)
-            estado = models.CharField(max_length=10, choices=ESTADOS, blank=True) # Choices de la lista de estados
+        # Se linkea el Manager del proyecto con el proyecto
+        objects = models.Manager()
+        projects = ProyectoManager()
 
-            def get_state(self):
-                """
-                :return: retorna el estado del proyecto
-                """
-                return self.estado
+        def __str__(self):
+            return "{}".format(self.nombre)
 
-            # Se agrega para simplicar llamada a funciones
-            objects = models.Manager()
-            projects = ProyectoManager()
-
-            def __str__(self):
-                return "{}".format(self.nombre)
-
-            def get_nombre(self):
-                """
-                Retorna nombre del proyecto
-                """
-                return self.nombre
-
+        def get_nombre(self):
+            """
+            Retorna nombre del proyecto
+            """
+            return self.nombre
 
 
 
