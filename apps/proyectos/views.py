@@ -5,9 +5,10 @@ from . import forms
 from django.forms import ValidationError
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class ProyectoCrear(CreateView):
+class ProyectoCrear(LoginRequiredMixin, CreateView):
     model = Proyecto
     fields = '__all__'
 
@@ -30,11 +31,35 @@ class ProyectoCrear(CreateView):
         return super(ProyectoCrear, self).render_to_response(self.get_context_data(**context))
 
 
-class ProyectoEditar(UpdateView):
+class ProyectoEditar(LoginRequiredMixin, UpdateView):
+    template_name = 'proyectos/proyecto_modificar.html'
     model = Proyecto
     fields = '__all__'
+    success_url = '/'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProyectoEditar, self).get_context_data(**kwargs)
+        return context
+
+    def get_success_url(self):
+        return reverse('home')
+
+    def form_valid(self, form):
+        form.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, form):
+        context = {
+            'form': form
+        }
+        print(form.errors)
+        return super(ProyectoEditar, self).render_to_response(self.get_context_data(**context))
 
 
-class ProyectoBorrar(DeleteView):
+class ProyectoBorrar(LoginRequiredMixin, DeleteView):
+    template_name = 'proyectos/proyecto_eliminar.html'
     model = Proyecto
-    success_url = 'home'
+    success_url = '/'
+
+
+
