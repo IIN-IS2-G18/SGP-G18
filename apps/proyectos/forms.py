@@ -29,7 +29,7 @@ class JsonableResponseMixin:
             return JsonResponse(data)
 
 
-class ProyectoForm(JsonableResponseMixin,ModelForm):
+class ProyectoForm(JsonableResponseMixin, ModelForm):
     class Meta:
         model = Proyecto
         fields = '__all__'
