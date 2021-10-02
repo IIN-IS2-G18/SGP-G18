@@ -1,18 +1,11 @@
-from django import forms
-from apps.proyectos.models import Proyecto
+from django.forms import ModelForm
+from .models import Proyecto
 
 
-class ProyectoForm(forms.ModelForm):
+class ProyectoForm(ModelForm):
     class Meta:
         model = Proyecto
-
-        fields = [
-            'nombre',
-            'descripcion',
-            'fechaInicio',
-            'fechaFin',
-        ]
-
+        fields = '__all__'
         labels = {
             'nombre': 'Nombre',
             'descripcion': 'Descripcion',
