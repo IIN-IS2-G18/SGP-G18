@@ -1,1 +1,5 @@
-/.idea/
+/apps/proyectos/migrations
+/apps/proyectos/__pycache__
+/djangoProject/__pycache__
+/apps/__pycache__
+.idea
