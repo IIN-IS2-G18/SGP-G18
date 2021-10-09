@@ -1,1 +1,63 @@
-<h1>LOGIN!!!</h1>
+{% load static %} {% load socialaccount %}
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title> Login Page </title>
+<style>
+Body {
+  font-family: Calibri, Helvetica, sans-serif;
+  background-color: #F5FFFA;
+  text-align: center;
+}
+button {
+       background-color: #000080;
+       width: 100%;
+        color: white;
+        padding: 15px;
+        margin: 10px 0px;
+        border: none;
+        cursor: pointer;
+         }
+ form {
+        border: 3px solid #f1f1f1;
+    }
+ input[type=text], input[type=password] {
+        width: 100%;
+        margin: 8px 0;
+        padding: 12px 20px;
+        display: inline-block;
+        border: 2px solid white;
+        box-sizing: border-box;
+    }
+ button:hover {
+        opacity: 0.7;
+    }
+
+
+ .container {
+        padding: 25px;
+        background-color: lightblue;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+</head>
+<body>
+    <br><br><br>
+    <center> <h1> SGP </h1> </center>
+    <br><br>
+    <form>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12"> <a class="btn btn-lg btn-google btn-block text-uppercase btn-outline" href="{% provider_login_url 'google'%}">
+                    <img src="https://img.icons8.com/color/16/000000/google-logo.png"> Inicie Sesión con Google</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</body>
+</html>
