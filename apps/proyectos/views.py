@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Proyecto
+from .models import Proyecto, Equipo
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from . import forms
 from django.forms import ValidationError
@@ -14,6 +14,8 @@ class ProyectoCrear(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(ProyectoCrear, self).get_context_data(**kwargs)
+        context["equipos"] = Equipo.objects.all()
+        context["estados"] = Proyecto.ESTADOS
         return context
 
     def get_success_url(self):
