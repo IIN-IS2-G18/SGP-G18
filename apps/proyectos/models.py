@@ -60,7 +60,7 @@ class Proyecto(models.Model):
 
         nombre = models.TextField('Nombre del Proyecto')
         descripcion = models.TextField('Descripcion', max_length=181)
-        equipo = models.ForeignKey(Equipo, on_delete=models.CASCADE,)
+        equipo = models.ManyToManyField(Equipo)
         fecha_inicio = models.DateField(null=True)
         fecha_fin = models.DateField(null=True)
         estado = models.CharField(max_length=10, choices=ESTADOS, blank=True) # Choices de la lista de estados
