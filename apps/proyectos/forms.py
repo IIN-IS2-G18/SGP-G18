@@ -15,9 +15,8 @@ class ProyectoForm(ModelForm, forms.Form):
         labels = {
             'nombre': 'Nombre',
             'descripcion': 'Descripcion',
-            'equipo' : 'Equipo',
-            'fechaInicio': 'Fecha de Inicio',
-            'fechaFin': 'Fecha de Finalizacion',
-            'estado' : 'Estado'
+            'equipo': 'Equipo',
+            'fecha_inicio': 'Fecha de Inicio',
+            'fecha_fin': 'Fecha de Finalizacion',
+            'estado': 'Estado'
         }
-
