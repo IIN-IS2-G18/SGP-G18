@@ -3,7 +3,17 @@ from django.dispatch import receiver
 from django.core.exceptions import FieldError
 from django.contrib.auth.models import User
 
+# === Models for Todos app ===
+
 class Equipo(models.Model):
+    """
+    Modelo para representar los Equipos en el proyecto.
+
+    Necesita de un nombre y de una lista de usuario que conforman el equipo
+
+    Para trazabilidad se agregaron los campos de created_at y updated_at que son calculados en el momento
+    de crear el objeto.
+    """
     nombre = models.CharField(max_length=20)
     usuarios = models.ManyToManyField(User)
     created_at = models.DateTimeField(auto_now_add=True)
