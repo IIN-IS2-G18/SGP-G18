@@ -66,7 +66,9 @@ class ProyectoCrear(LoginRequiredMixin, CreateView):
         return super(ProyectoCrear, self).render_to_response(self.get_context_data(**context),)
 
 
-class ProyectoEditar(LoginRequiredMixin, UpdateView)
+
+class ProyectoEditar(LoginRequiredMixin, UpdateView):
+
     """
     View creado para actualizar el proyecto en caso de ser necesario.
     
