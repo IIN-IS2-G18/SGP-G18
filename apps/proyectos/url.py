@@ -22,4 +22,5 @@ urlpatterns = [
     path('crear/', views.ProyectoCrear.as_view()),
     path('<int:pk>/modificar/', views.ProyectoEditar.as_view(), name='proyecto_editar'),
     path('<int:pk>/eliminar/', views.ProyectoBorrar.as_view(), name='proyecto_borrar'),
+    path('<int:pk>/detalle/', views.ProyectoDetalle.as_view(), name='proyecto_detalle'),
 ]

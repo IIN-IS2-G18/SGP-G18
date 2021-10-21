@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+        <h4 style="text-align: center">Crear Sprint</h4>
+        <script>
+            function submit(){
+                document.getElementById("form").submit()
+            }
+        </script>
+        <form action="" method="post" id="form">
+            {% csrf_token %}
+
+            <p><div>
+                <label style="color: black" for="codigo">Codigo del Sprint :</label>
+                <input type="text" id="codigo" name="codigo" required>
+            </div></p>
+            <p><div>
+                <label for="descripcion">Descripcion:</label>
+                <textarea id="descripcion" rows="1" cols="50" name="descripcion" required></textarea>
+            </div></p>
+            <p><div>
+                <label for="fecha_inicio">Fecha de Inicio:</label>
+                <input type="date" id="fecha_inicio" name="fecha_inicio" required>
+            </div></p>
+            <p><div>
+                <label for="fecha_fin">Fecha de Fin:</label>
+                <input type=date id="fecha_fin" name="fecha_fin" required>
+            </div></p>
+            <p><div>
+                <input type="hidden" id="estado" name="estado" value="ACTIVO">
+            </div></p>
+            <button type="submit" onclick="submit()" class="btn-small blue darken-3 right">Guardar
+             <i class="material-icons left">add_circle</i></button>
+        </form>
+
+
+</section>
+	</div>
+{% endblock %}
