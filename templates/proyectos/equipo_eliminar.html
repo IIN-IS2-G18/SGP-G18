@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form method="post">{% csrf_token %}
+    <p>¿Está seguro que desea eliminar al equipo "{{ object.nombre }}"?</p>
+    <input type="submit" value="Confirmar">
+</form>
+{% endblock %}
