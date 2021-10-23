@@ -5,6 +5,28 @@ from django.contrib.auth.models import User
 # === Models for Todos app ===
 
 
+class Equipo(models.Model):
+    """
+    Modelo para representar los Equipos en el proyecto.
+
+    Necesita de un nombre y de una lista de usuario que conforman el equipo
+
+    Para trazabilidad se agregaron los campos de created_at y updated_at que son calculados en el momento
+    de crear el objeto.
+    """
+    nombre = models.CharField(max_length=20)
+    usuarios = models.ManyToManyField(User)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        permissions = (
+            ("agregar_integrante", "Permiso para editar el proyecto."),
+            ("eliminar_integrante", "Permiso para cancelar el proyecto."),
+            ("crear_equipo", "Permiso para crear el equipo."),
+            ("eliminar_equipo" , "Permiso para eliminar el equipo")
+        )
+
 class ProyectoManager(models.Manager):
     def crear(self, **kwargs):
         """
@@ -58,6 +80,7 @@ class Proyecto(models.Model):
         descripcion = models.TextField('Descripcion', max_length=181)
         fecha_inicio = models.DateField(null=True)
         fecha_fin = models.DateField(null=True)
+        equipo = models.ForeignKey(Equipo, on_delete=models.CASCADE)
         estado = models.CharField(max_length=10, choices=ESTADOS, blank=True) # Choices de la lista de estados
 
         def get_state(self):
@@ -81,28 +104,7 @@ class Proyecto(models.Model):
             )
 
 
-class Equipo(models.Model):
-    """
-    Modelo para representar los Equipos en el proyecto.
 
-    Necesita de un nombre y de una lista de usuario que conforman el equipo
-
-    Para trazabilidad se agregaron los campos de created_at y updated_at que son calculados en el momento
-    de crear el objeto.
-    """
-    nombre = models.CharField(max_length=20)
-    proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE)
-    usuarios = models.ManyToManyField(User)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        permissions = (
-            ("agregar_integrante", "Permiso para editar el proyecto."),
-            ("eliminar_integrante", "Permiso para cancelar el proyecto."),
-            ("crear_equipo", "Permiso para crear el equipo."),
-            ("eliminar_equipo" , "Permiso para eliminar el equipo")
-        )
 
 
 

@@ -1,5 +1,6 @@
 from django import forms
 from django.forms import ModelForm, ModelChoiceField, SelectDateWidget
+from django.contrib.auth.models import User
 from .models import Proyecto, Equipo
 from django.http import JsonResponse
 
@@ -20,3 +21,11 @@ class ProyectoForm(ModelForm, forms.Form):
             'fecha_fin': 'Fecha de Finalizacion',
             'estado': 'Estado'
         }
+
+
+class EquipoForm(ModelForm, forms.Form):
+    usuarios = ModelChoiceField(queryset=User.objects.all())
+
+    class Meta:
+        model = Equipo
+        fields = '__all__'

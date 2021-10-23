@@ -155,4 +155,52 @@ class ProyectoDetalle(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
         return context
 
 
+class EquipoCrear(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    model = Equipo
+    permission_required = 'proyectos.crear_equipo'
+    fields = '__all__'
 
+    def get_context_data(self, **kwargs):
+        """
+
+        Override de la función original, agregamos el query de todos los equipos dentro del proyecto
+        y las opciones para los estados.
+
+        El contexto puede ser accedido directamente en el template de proyecto_form.html
+        Agregamos al context para poder colocarlos como opciones en la lista desplegable.
+
+        :param kwargs:
+        :return: contexto
+        """
+        context = super(EquipoCrear, self).get_context_data(**kwargs)
+        return context
+
+    def get_success_url(self):
+        """
+        Override de la función original
+
+        Se implementa un template personalizado en caso de que el proyecto fue creado/actualizado exitosamente
+        :return: redireccionamiento hacia la página de éxito
+        """
+        return reverse('home')
+
+    def form_valid(self, form):
+        """
+        En caso de que el form sea válido, este es guardado y se crea el objeto en la base de datos.
+        :param form:
+        :return: Redireccionamiento a la página de éxito
+        """
+        form.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, form):
+        """
+        Se recarga la página del form y se muestra en pantalla los errores que puedieron haber cometido
+        durante la creación del form.
+        :param form:
+        :return: Reload del form con errores.
+        """
+        context = {
+            'form': form
+        }
+        return super(EquipoCrear, self).render_to_response(self.get_context_data(**context), )
