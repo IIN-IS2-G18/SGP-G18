@@ -39,13 +39,8 @@
                 <input type=date id="fecha_fin" name="fecha_fin" required>
             </div></p>
             <p><div>
-                <label class="select" for="estado">Estado:</label>
-                  <select id="estado" name="estado" required="required">
-                    <option value="" disabled="disabled" selected="selected">Seleccionar Estado</option>
-                      {% for estado in estados %}
-                        <option value="{{ estado.0 }}"> {{ estado.1 }} </option>
-                      {% endfor %}
-                  </select>
+                <label class="select" for="estado" hidden>Estado:</label>
+                  <input type="hidden" id="estado" name="estado" value="ACTIVO" required>
             </div></p>
             <button type="submit" onclick="submit()" class="btn-small blue darken-3 right">Guardar
              <i class="material-icons left">add_circle</i></button>

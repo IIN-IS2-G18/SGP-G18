@@ -7,7 +7,6 @@ from django.http import JsonResponse
 
 
 class ProyectoForm(ModelForm, forms.Form):
-    equipo = ModelChoiceField(initial = 0, queryset=Equipo.objects.all())
     fechaInicio = SelectDateWidget()
     fechaFin = SelectDateWidget()
     class Meta:
