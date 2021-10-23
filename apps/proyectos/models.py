@@ -22,8 +22,8 @@ class Equipo(models.Model):
 
     class Meta:
         permissions = (
-            ("agregar_integrante", "Permiso para editar el proyecto."),
-            ("eliminar_integrante", "Permiso para cancelar el proyecto."),
+            ("agregar_integrante", "Permiso para agregar integrante al equipo."),
+            ("eliminar_integrante", "Permiso para eliminar integrante al equipo."),
             ("crear_equipo", "Permiso para crear el equipo."),
             ("eliminar_equipo", "Permiso para eliminar el equipo")
         )

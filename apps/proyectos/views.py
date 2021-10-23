@@ -206,6 +206,74 @@ class EquipoCrear(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         return super(EquipoCrear, self).render_to_response(self.get_context_data(**context),)
 
 
+class EquipoModificar(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
+    model = Equipo
+    permission_required = ('proyectos.agregar_integrante', 'proyectos.eliminar_integrante')
+    fields = '__all__'
+
+    def get_context_data(self, **kwargs):
+        """
+
+        Override de la función original, agregamos el query de todos los equipos dentro del proyecto
+        y las opciones para los estados.
+
+        El contexto puede ser accedido directamente en el template de proyecto_form.html
+        Agregamos al context para poder colocarlos como opciones en la lista desplegable.
+
+        :param kwargs:
+        :return: contexto
+        """
+        context = super(EquipoModificar, self).get_context_data(**kwargs)
+        return context
+
+    def get_success_url(self):
+        """
+        Override de la función original
+
+        Se implementa un template personalizado en caso de que el proyecto fue creado/actualizado exitosamente
+        :return: redireccionamiento hacia la página de éxito
+        """
+        return reverse('home')
+
+    def form_valid(self, form):
+        """
+        En caso de que el form sea válido, este es guardado y se crea el objeto en la base de datos.
+        :param form:
+        :return: Redireccionamiento a la página de éxito
+        """
+        form.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, form):
+        """
+        Se recarga la página del form y se muestra en pantalla los errores que puedieron haber cometido
+        durante la creación del form.
+        :param form:
+        :return: Reload del form con errores.
+        """
+        context = {
+            'form': form
+        }
+        return super(EquipoModificar, self).render_to_response(self.get_context_data(**context),)
+
+
+class EquipoBorrar(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+    """
+    View implementado para eliminar un proyecto de la base de datos
+
+    Requiere que el usuario esté logueado y hereda de DeleteView.
+
+    El template es una página que solicita una confirmación para eliminar el proyecto.
+
+    El url de éxito redirige a home.
+    """
+    template_name = 'proyectos/equipo_eliminar.html'
+    permission_required = 'proyectos.eliminar_equipo'
+    raise_exception = True
+    model = Equipo
+    success_url = '/'
+
+
 class SprintCrear(CreateView):
     # Se especifica el models para crear view
     model = Sprint
