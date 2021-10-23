@@ -2,6 +2,7 @@ from django.db import models
 from django.dispatch import receiver
 from django.core.exceptions import FieldError
 from django.contrib.auth.models import User
+from django.db.models import CASCADE
 # === Models for Todos app ===
 
 
@@ -24,8 +25,9 @@ class Equipo(models.Model):
             ("agregar_integrante", "Permiso para editar el proyecto."),
             ("eliminar_integrante", "Permiso para cancelar el proyecto."),
             ("crear_equipo", "Permiso para crear el equipo."),
-            ("eliminar_equipo" , "Permiso para eliminar el equipo")
+            ("eliminar_equipo", "Permiso para eliminar el equipo")
         )
+
 
 class ProyectoManager(models.Manager):
     def crear(self, **kwargs):
@@ -35,13 +37,12 @@ class ProyectoManager(models.Manager):
         :returns:  Nada si el proyecto no se creo sino la instancia del nuevo proyecto.
         """
         # Se verifica si se pasaron  los campos necesarios
-        #requerimientos = ['nombre', 'descripcion', 'equipo', 'fecha_inicio', 'fecha_fin', 'estado']
+        # requerimientos = ['nombre', 'descripcion', 'equipo', 'fecha_inicio', 'fecha_fin', 'estado']
         requerimientos = ['nombre', 'descripcion', 'fecha_inicio', 'fecha_fin']
 
         for requerimiento in requerimientos:
             if requerimiento not in kwargs.keys():
                 raise KeyError('{} es requerido.'.format(requerimiento))
-
 
         proyecto = Proyecto()
 
@@ -72,16 +73,16 @@ class Proyecto(models.Model):
         CULMINADO = 'CULMINADO'
         CANCELADO = 'CANCELADO'
         ESTADOS = [(ACTIVO, 'Activo'),
-                    (CULMINADO, 'Culminado'),
-                    (CANCELADO, 'Cancelado')
-                    ]
+                   (CULMINADO, 'Culminado'),
+                   (CANCELADO, 'Cancelado')
+                   ]
 
         nombre = models.TextField('Nombre del Proyecto')
         descripcion = models.TextField('Descripcion', max_length=181)
         fecha_inicio = models.DateField(null=True)
         fecha_fin = models.DateField(null=True)
         equipo = models.ForeignKey(Equipo, on_delete=models.CASCADE)
-        estado = models.CharField(max_length=10, choices=ESTADOS, blank=True) # Choices de la lista de estados
+        estado = models.CharField(max_length=10, choices=ESTADOS, blank=True)  # Choices de la lista de estados
 
         def get_state(self):
             """
@@ -104,8 +105,68 @@ class Proyecto(models.Model):
             )
 
 
+class Sprint(models.Model):
+    """
+    Tabla para el sprint
+
+    nombre: identificador para el sprint
+    fecha_inicio: fecha en donde comenzara el sprint
+    fecha_fin: fecha en donde terminara el sprint
+    duracion: cantidad de dias del sprint
+    proyecto: proyecto al cual pertenece el sprint
+    estado: estado del sprint
+    historias: historias de usuario que son asignadas al sprint
+    """
+    # Estados de un sprint
+    ACTIVO = 'Activo'
+    CULMINADO = 'Culminado'
+    CANCELADO = 'Cancelado'
+    ESTADO_CHOICES = [
+        (ACTIVO, 'Activo'),
+        (CULMINADO, 'Culminado'),
+        (CANCELADO, 'Cancelado')
+    ]
+
+    numero_sprint = models.PositiveIntegerField(null=True)
+    fecha_inicio = models.DateTimeField(null=True, blank=True)
+    fecha_fin = models.DateTimeField(null=True, blank=True)
+    duracion = models.PositiveIntegerField(null=True)
+    proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE, null=True)
+    # estado de sprint
+    estado = models.CharField(choices=ESTADO_CHOICES, default=True, max_length=15)
 
 
+def __str__(self):
+    return self.nombre
 
 
-
+class UserStory(models.Model):
+    """
+    Tabla de UserStory en la base de datos
+    """
+    # Estados de un US
+    TODO = 'TO_DO'
+    INPROGRESS = 'IN_PROGRESS'
+    COMPLETED = 'COMPLETED'
+    PRODUCTBACKLOG = 'PRODUCT_BACKLOG'
+    ESTADO_CHOICES = [
+        (TODO, 'To Do'),
+        (INPROGRESS, 'In Progress'),
+        (COMPLETED, 'Completed'),
+        (PRODUCTBACKLOG, 'Product Backlog')
+    ]
+    # Prioridades del US
+    BAJA = 'BAJA'
+    ALTA = 'ALTA'
+    EMERGENCIA = 'EMERGENCIA'
+    PRIORIDADES = [
+        (BAJA, 'Baja'),
+        (ALTA, 'Alta'),
+        (EMERGENCIA, 'Emergencia')
+    ]
+    # Datos
+    nombre = models.CharField(max_length=15)
+    descripcion = models.CharField(max_length=50)
+    prioridad = models.CharField(choices=PRIORIDADES, max_length=15)
+    estado_us = models.CharField(choices=ESTADO_CHOICES, default=PRODUCTBACKLOG, max_length=15)
+    sprint = models.ForeignKey(Sprint, on_delete=models.CASCADE)
