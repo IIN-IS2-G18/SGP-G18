@@ -2,22 +2,7 @@ from django.db import models
 from django.dispatch import receiver
 from django.core.exceptions import FieldError
 from django.contrib.auth.models import User
-
 # === Models for Todos app ===
-
-class Equipo(models.Model):
-    """
-    Modelo para representar los Equipos en el proyecto.
-
-    Necesita de un nombre y de una lista de usuario que conforman el equipo
-
-    Para trazabilidad se agregaron los campos de created_at y updated_at que son calculados en el momento
-    de crear el objeto.
-    """
-    nombre = models.CharField(max_length=20)
-    usuarios = models.ManyToManyField(User)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
 
 class ProyectoManager(models.Manager):
@@ -47,6 +32,7 @@ class ProyectoManager(models.Manager):
 
         proyecto.save()
 
+
 class Proyecto(models.Model):
         """
         El model guarda informacion de todos los proyectos del sistema.
@@ -70,7 +56,6 @@ class Proyecto(models.Model):
 
         nombre = models.TextField('Nombre del Proyecto')
         descripcion = models.TextField('Descripcion', max_length=181)
-        equipo = models.ManyToManyField(Equipo)
         fecha_inicio = models.DateField(null=True)
         fecha_fin = models.DateField(null=True)
         estado = models.CharField(max_length=10, choices=ESTADOS, blank=True) # Choices de la lista de estados
@@ -85,15 +70,39 @@ class Proyecto(models.Model):
         objects = models.Manager()
         projects = ProyectoManager()
 
-        def __str__(self):
-            return "{}".format(self.nombre)
+        class Meta:
+            permissions = (
+                ("crear_proyecto", "Permiso para crear un proyecto."),
+                ("ver_proyecto", "Permiso para ver el proyecto."),
+                ("editar_proyectos", "Permiso para editar el proyecto."),
+                ("borrar_proyectos", "Permiso para borrar el proyecto."),
+                ("cancelar_proyectos", "Permiso para cancelar el proyecto."),
+                ("culminar_proyectos", "Permiso para culminar el proyecto."),
+            )
 
-        def get_nombre(self):
-            """
-            Retorna nombre del proyecto
-            """
-            return self.nombre
 
+class Equipo(models.Model):
+    """
+    Modelo para representar los Equipos en el proyecto.
+
+    Necesita de un nombre y de una lista de usuario que conforman el equipo
+
+    Para trazabilidad se agregaron los campos de created_at y updated_at que son calculados en el momento
+    de crear el objeto.
+    """
+    nombre = models.CharField(max_length=20)
+    proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE)
+    usuarios = models.ManyToManyField(User)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        permissions = (
+            ("agregar_integrante", "Permiso para editar el proyecto."),
+            ("eliminar_integrante", "Permiso para cancelar el proyecto."),
+            ("crear_equipo", "Permiso para crear el equipo."),
+            ("eliminar_equipo" , "Permiso para eliminar el equipo")
+        )
 
 
 

@@ -11,14 +11,9 @@
         </script>
         <form action="" method="post" id="form">
             {% csrf_token %}
-
             <p><div>
-                <label style="color: black" for="codigo">Codigo del Sprint :</label>
-                <input type="text" id="codigo" name="codigo" required>
-            </div></p>
-            <p><div>
-                <label for="descripcion">Descripcion:</label>
-                <textarea id="descripcion" rows="1" cols="50" name="descripcion" required></textarea>
+                <label style="color: black" for="numero">Número del Sprint:</label>
+                <input type="number" id="numero" name="numero" required>
             </div></p>
             <p><div>
                 <label for="fecha_inicio">Fecha de Inicio:</label>
@@ -29,13 +24,15 @@
                 <input type=date id="fecha_fin" name="fecha_fin" required>
             </div></p>
             <p><div>
+                <label style="color: black" for="duracion">Duración del Sprint:</label>
+                <input type="number" id="duracion" name="duracion" required>
+            </div></p>
+            <p><div>
+                <label class="select" for="estado">Estado del Sprint:</label>
                 <input type="hidden" id="estado" name="estado" value="ACTIVO">
             </div></p>
             <button type="submit" onclick="submit()" class="btn-small blue darken-3 right">Guardar
              <i class="material-icons left">add_circle</i></button>
         </form>
-
-
-</section>
-	</div>
+</div>
 {% endblock %}

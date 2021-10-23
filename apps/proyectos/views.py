@@ -1,20 +1,23 @@
 from django.shortcuts import render, redirect
 from .models import Proyecto, Equipo
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic import DetailView
 from . import forms
 from django.forms import ValidationError
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 
-class ProyectoCrear(LoginRequiredMixin, CreateView):
+class ProyectoCrear(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """
     View creado específicamente para crear un proyecto.
 
     Utiliza un LoginRequiredMixin para asegurarnos de que solo puede ser accedida
     por usuarios que están logueados y hereda del CreateView.
     """
+    permission_required = 'proyectos.crear_proyecto'
+    raise_exception = True
     model = Proyecto
     fields = '__all__'
 
@@ -66,9 +69,7 @@ class ProyectoCrear(LoginRequiredMixin, CreateView):
         return super(ProyectoCrear, self).render_to_response(self.get_context_data(**context),)
 
 
-
-class ProyectoEditar(LoginRequiredMixin, UpdateView):
-
+class ProyectoEditar(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """
     View creado para actualizar el proyecto en caso de ser necesario.
     
@@ -77,6 +78,8 @@ class ProyectoEditar(LoginRequiredMixin, UpdateView):
     
     """
     template_name = 'proyectos/proyecto_modificar.html'
+    permission_required = 'proyectos.editar_proyecto'
+    raise_exception = True
     model = Proyecto
     fields = '__all__'
     success_url = '/'
@@ -120,7 +123,8 @@ class ProyectoEditar(LoginRequiredMixin, UpdateView):
         return super(ProyectoEditar, self).render_to_response(self.get_context_data(**context))
 
 
-class ProyectoBorrar(LoginRequiredMixin, DeleteView):
+
+class ProyectoBorrar(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """
     View implementado para eliminar un proyecto de la base de datos
 
@@ -131,8 +135,24 @@ class ProyectoBorrar(LoginRequiredMixin, DeleteView):
     El url de éxito redirige a home.
     """
     template_name = 'proyectos/proyecto_eliminar.html'
+    permission_required = 'proyectos.borrar_proyecto'
+    raise_exception = True
     model = Proyecto
     success_url = '/'
+
+class ProyectoDetalle(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+    model = Proyecto
+    template_name = 'proyectos/proyecto_detalle.html'
+    permission_required = 'proyectos.ver_proyecto'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProyectoDetalle, self).get_context_data(**kwargs)
+        id_proyecto = self.kwargs['pk']
+        proyecto = Proyecto.objects.get(id=id_proyecto)
+        equipo = Equipo.objects.filter(proyecto=id_proyecto)
+        context["proyecto"] = proyecto
+        context["equipo"] = equipo
+        return context
 
 
 
