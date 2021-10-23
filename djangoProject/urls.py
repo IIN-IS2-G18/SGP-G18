@@ -23,5 +23,6 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('', Home.as_view(), name="home"),
     path('proyectos/', include('apps.proyectos.url'),name="proyectos"),
-    path('cuentas/login/',auth_views.LoginView.as_view())
+    path('cuentas/login/',auth_views.LoginView.as_view()),
+    path('sprint/', include('apps.sprint.url'), name="sprint")
 ]

@@ -1,29 +1,30 @@
 from django.forms import ModelForm, SelectDateWidget
 from django import forms
-from .models import UserStory
+from .models import Sprint, UserStory
 from django.http import JsonResponse
 
 
-class CrearUserStoryForm(ModelForm):
-    """
-    Formulario para crear un US
-
-    """
-    class Meta:
-        model = UserStory
-        fields = '__all__'
-
-
-class SprintForm(ModelForm, forms.Form):
-    fecha_inicio = SelectDateWidget()
-    fecha_fin = SelectDateWidget()
-
+# Se crea un form para el Sprint
+class SprintForm(forms.ModelForm):
     class Meta:
         model = Sprint
-        fields = '__all__'
-        labels = {
-            'nombre': 'Nombre',
-            'descripcion': 'Descripcion',
-            'fecha_inicio': 'Fecha de Inicio',
-            'fecha_fin': 'Fecha de Finalizacion',
-        }
+        fields = [
+            "numero_sprint",
+            "fecha_inicio",
+            "fecha_fin",
+            "duracion",
+            #"proyecto",
+            "estado",
+        ]
+# Se crea un form para el UserStory
+
+
+class UserStoryForm(forms.ModelForm):
+    class Meta:
+        model = UserStory
+        fields = [
+            "nombre",
+            "descripcion",
+            "prioridad",
+            # "sprint",
+        ]

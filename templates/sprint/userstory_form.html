@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+        <h4 style="text-align: center">Crear User Story</h4>
+        <script>
+            function submit(){
+                document.getElementById("form").submit()
+            }
+        </script>
+        <form action="" method="post" id="form">
+            {% csrf_token %}
+            <p><div>
+                <label style="color: black" for="nombre">Nombre del US:</label>
+                <input type="text" id="nombre" name="nombre" required>
+            </div></p>
+             <p><div>
+                <label for="descripcion">Descripcion:</label>
+                <textarea id="descripcion" rows="1" cols="50" name="descripcion" required></textarea>
+            </div></p>
+            <p><div>
+                <label class="select" for="prioridad">Prioridad del US:</label>
+                  <select id="prioridad" name="prioridad" required="required">
+                    <option value="" disabled="disabled" selected="selected">Seleccionar Prioridad</option>
+                      {% for prioridad in prioridades %}
+                        <option value="{{ prioridad.0 }}"> {{ prioridad.1 }} </option>
+                      {% endfor %}
+                  </select>
+            </div></p>
+            <button type="submit" onclick="submit()" class="btn-small blue darken-3 right">Guardar
+             <i class="material-icons left">add_circle</i></button>
+        </form>
+</section>
+	</div>
+{% endblock %}
