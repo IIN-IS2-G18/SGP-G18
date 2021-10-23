@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.google'
 ]
 
 MIDDLEWARE = [
@@ -141,6 +141,7 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend'
 ]
+
 
 # The SCOPE specifies what is requested from Google APIs. If the scope is not specified, it defaults to profile . To refresh authentication in the background, set AUTH_PARAMS['access_type'] to offline.
 
