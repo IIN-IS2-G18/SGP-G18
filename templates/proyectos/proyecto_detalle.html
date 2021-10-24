@@ -1,11 +1,31 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+.container {
+  height: 200px;
+  position: relative;
+}
 
+.botones {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  text-align : center;
+  font-size : 12px;
+}
+</style>
+</style>
 <div class="container">
         <h4 style="text-align: center"> {{ proyecto.nombre }}</h4>
         <h4 style="text-align: center"> {{ equipo.nombre }}</h4>
-        <button type="submit" onclick="submit()" class="btn-small blue darken-3 right">Crear Sprint
-             <i class="material-icons left">add_circle</i></button>
-	</div>
+        <br><br>
+    <div class="botones"><a href="{% url 'crear_sprint' proyecto.id %}?next={{request.path}}" class="btn btn-primary">Crear Sprint</a>
+        <br><br><button type="submit" onclick="submit()" class="btn btn-primary">Crear User Story
+             <i class="material-icons left"></i></button>
+    </div>
+</div>
 {% endblock %}
