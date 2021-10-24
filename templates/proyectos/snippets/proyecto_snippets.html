@@ -15,7 +15,7 @@
         <div class="col-12 text-center">
             {% if perms.proyectos.crear_proyecto %}
                 <form action="/proyectos/crear/">
-                        <button type="submit"  class="btn btn-dark">
+                       <br> <button type="submit"  class="btn btn-primary">
                             Crear Proyecto
                         </button>
                 </form>
@@ -25,8 +25,8 @@
         <div class="col-12 text-center">
             {% if perms.proyectos.crear_proyecto %}
                 <form action="/proyectos/crear/">
-                        <button type="submit"  class="btn btn-dark">
-                            Listar todos los proyectos.
+                        <br><button type="submit"  class="btn btn-primary">
+                            Listar Proyectos
                         </button>
                 </form>
             {% endif %}
@@ -34,8 +34,8 @@
         <div class="col-12 text-center">
             {% if perms.proyectos.crear_proyecto %}
                 <form action="/proyectos/crear/">
-                        <button type="submit"  class="btn btn-dark">
-                            Administrar Usuarios.
+                        <br><button type="submit"  class="btn btn-primary">
+                            Administrar Usuarios
                         </button>
                 </form>
             {% endif %}

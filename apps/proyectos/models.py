@@ -118,9 +118,9 @@ class Sprint(models.Model):
     historias: historias de usuario que son asignadas al sprint
     """
     # Estados de un sprint
-    ACTIVO = 'Activo'
-    CULMINADO = 'Culminado'
-    CANCELADO = 'Cancelado'
+    ACTIVO = 'ACTIVO'
+    CULMINADO = 'CULMINADO'
+    CANCELADO = 'CANCELADO'
     ESTADO_CHOICES = [
         (ACTIVO, 'Activo'),
         (CULMINADO, 'Culminado'),
@@ -128,12 +128,22 @@ class Sprint(models.Model):
     ]
 
     numero_sprint = models.PositiveIntegerField(null=True)
-    fecha_inicio = models.DateTimeField(null=True, blank=True)
-    fecha_fin = models.DateTimeField(null=True, blank=True)
+    fecha_inicio = models.DateField(null=True, blank=True)
+    fecha_fin = models.DateField(null=True, blank=True)
     duracion = models.PositiveIntegerField(null=True)
     proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE, null=True)
     # estado de sprint
-    estado = models.CharField(choices=ESTADO_CHOICES, default=True, max_length=15)
+    estado = models.CharField(choices=ESTADO_CHOICES, default=ACTIVO, max_length=15)
+
+    class Meta:
+        permissions = (
+            ("crear_sprint", "Permiso para crear sprint."),
+            ("ver_sprint", "Permiso para ver el sprint."),
+            ("editar_sprint", "Permiso para editar el sprint."),
+            ("borrar_sprint", "Permiso para borrar el sprint."),
+            ("cancelar_sprint", "Permiso para cancelar el sprint."),
+            ("culminar_sprint", "Permiso para culminar el sprint."),
+        )
 
 
 def __str__(self):
@@ -170,3 +180,10 @@ class UserStory(models.Model):
     prioridad = models.CharField(choices=PRIORIDADES, max_length=15)
     estado_us = models.CharField(choices=ESTADO_CHOICES, default=PRODUCTBACKLOG, max_length=15)
     sprint = models.ForeignKey(Sprint, on_delete=models.CASCADE)
+
+    class Meta:
+        permissions = (
+            ("crear_us", "Permiso para crear un US."),
+            ("modificar_us", "Permiso para modificar el US."),
+            ("borrar_us", "Permiso para borrar el US."),
+        )

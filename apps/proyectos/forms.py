@@ -39,7 +39,7 @@ class SprintForm(forms.ModelForm):
             "fecha_inicio",
             "fecha_fin",
             "duracion",
-            #"proyecto",
+            "proyecto",
             "estado",
         ]
 # Se crea un form para el UserStory
