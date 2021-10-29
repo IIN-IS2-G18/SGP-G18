@@ -2,7 +2,7 @@
 
 {% block content %}
 <form method="post">{% csrf_token %}
-    <p>¿Está seguro que desea eliminar "{{ object }}"?</p>
+    <p>¿Está seguro que desea eliminar el Sprint "{{ object }}"?</p>
     <input type="submit" value="Confirmar">
 </form>
 {% endblock %}
