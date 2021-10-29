@@ -14,7 +14,8 @@
             <p><div>
                 <label style="color: black" for="numero_sprint">Número del Sprint:</label>
                 {{ form.numero_sprint.errors }}
-                <input type="number" id="numero_sprint" name="numero_sprint" required>
+                <input type="text" value="{{ count }}" id="numero_sprint1" name="numero_sprint1" disabled>
+                <input type="number" value="{{ count }}" id="numero_sprint" name="numero_sprint" hidden>
             </div></p>
             <p><div>
                 <label for="fecha_inicio">Fecha de Inicio:</label>
@@ -26,19 +27,14 @@
                 {{ form.fecha_fin.errors }}
                 <input type=date id="fecha_fin" name="fecha_fin" required>
             </div></p>
-            <p><div>
-                <label style="color: black" for="duracion">Duración del Sprint:</label>
-                {{ form.duracion.errors }}
-                <input type="number" id="duracion" name="duracion" required>
+              <p><div>
+                <label class="select" for="proyecto" hidden></label>
+                    <input type="hidden" id="proyecto" name="proyecto" value="{{ proyecto }}">
             </div></p>
             <p><div>
-                <label class="select" for="estado" hidden>Estado del Sprint:</label>
+                <label class="select" for="estado_sprint" hidden>Estado del Sprint:</label>
                 {{ form.estado.errors }}
-                <input type="hidden" id="estado" name="estado" value="ACTIVO">
-            </div></p>
-            <p><div>
-                {{ form.proyecto.errors }}
-                <input type="hidden" id="proyecto" name="proyecto" value={{ proyecto }}>
+                <input type="hidden" id="estado_sprint" name="estado_sprint" value="PLANIFICANDO">
             </div></p>
             <button type="submit" onclick="submit()" class="btn-small blue darken-3 right">Guardar
              <i class="material-icons left">add_circle</i></button>
