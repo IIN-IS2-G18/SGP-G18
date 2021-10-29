@@ -1,22 +1,19 @@
-
-from webbrowser import get
 from django.shortcuts import render, redirect, get_object_or_404
 from requests import request
 from .models import Proyecto, Equipo, Sprint, UserStory, HistorialUS, RolProyecto, RolProyectoUsuarios
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-
+from django.views.generic.detail import SingleObjectMixin
 from django.views.generic import DetailView
 from . import forms
 from django.contrib import messages
 from django.forms import ValidationError
-from django.http import HttpRequest, JsonResponse
+from django.http import HttpRequest, JsonResponse, HttpResponseRedirect
 from allauth.socialaccount.models import SocialAccount
 from django.contrib.auth.models import User
 import json
 from django.http import HttpResponse
 from django.urls import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.shortcuts import get_object_or_404
 
 
 class ProyectoCrear(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -284,7 +281,6 @@ class EquipoBorrar(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     success_url = '/'
 
 
-
 class SprintCrear(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     # Se especifica el models para crear view
     permission_required = 'sprint.crear_sprint'
@@ -295,10 +291,28 @@ class SprintCrear(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
             "numero_sprint",
             "fecha_inicio",
             "fecha_fin",
-            "duracion",
             "proyecto",
-            "estado",
+            "estado_sprint",
     ]
+
+    def get_object(self):
+        """Esta función va a retornar el proyecto con el cual se comprueba el permiso"""
+        self.obj = get_object_or_404(Proyecto, pk=self.kwargs['pkproy'])
+        return self.obj
+
+    def dispatch(self, request, *args, **kwargs):
+        """Se controla que el proyecto este activo(al no cumplir vuelve al path anterior)"""
+        sprint_count = Sprint.objects.filter(proyecto=self.kwargs['pkproy']).filter(
+            estado_sprint='PLANIFICANDO').count()
+        proyecto = get_object_or_404(Proyecto, pk=self.kwargs['pkproy'])
+        next = request.GET.get('next')
+        if proyecto.estado != 'ACTIVO':
+            messages.warning(request, 'Proyecto finalizado, no es posible realizar cambios')
+            return HttpResponseRedirect(next)
+        if sprint_count != 0:
+            messages.warning(request, 'Error, no se puede crear otro sprint')
+            return HttpResponseRedirect(next)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """
@@ -311,10 +325,19 @@ class SprintCrear(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         :param kwargs:
         :return: contexto
         """
+
         context = super(SprintCrear, self).get_context_data(**kwargs)
-        context["estados"] = Proyecto.ESTADOS
-        context["proyecto"] = self.kwargs['pkproy']
+        sprints_count = Sprint.objects.filter(proyecto=self.kwargs['pkproy']).exclude(estado_sprint='CANCELADO').count()
+        context.update({
+            'proyecto': self.kwargs['pkproy'],
+            'count': sprints_count + 1,
+            'sprints_count': Sprint.objects.filter(proyecto=self.kwargs['pkproy']).filter(
+                estado_sprint='ACTIVO').count()
+        })
         return context
+        """context["estados"] = Sprint.estado_sprint
+        context["proyecto"] = self.kwargs['pkproy']
+        return context"""
 
     def get_success_url(self):
         """
@@ -332,8 +355,14 @@ class SprintCrear(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
             :param form:
             :return: Redireccionamiento a la página de éxito
         """
-        form.save()
-        return HttpResponseRedirect(self.get_success_url())
+        proyecto = Proyecto.objects.get(pk=self.kwargs['pkproy'])
+        sprints_count = Sprint.objects.filter(proyecto=self.kwargs['pkproy'])\
+            .exclude(estado_sprint='CANCELADO').count()
+        obj = form.save(commit=True)
+        obj.numero_sprint = 'Sprint ' + str(sprints_count + 1)
+        obj.proyecto = proyecto
+        obj.save()
+        return HttpResponseRedirect(reverse('proyecto_detalle', kwargs={'pk': self.kwargs['pkproy']}))
 
     def form_invalid(self, form):
         """
@@ -358,9 +387,8 @@ class SprintModificar(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
             "numero_sprint",
             "fecha_inicio",
             "fecha_fin",
-            "duracion",
             "proyecto",
-            "estado",
+            "estado_sprint",
         ]
         # Se puede especificar url exitoso
         # Url para redireccionar despues del exito
@@ -425,9 +453,12 @@ class UserStoryCrear(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
             "nombre",
             "descripcion",
             "prioridad",
-            # "estado",
-            # "proyecto",
-            # "sprint",
+            "fecha_ingreso",
+            "estado_us",
+            "horas_estimadas",
+            "tiempo",
+            "id_proyecto",
+            "responsable",
         ]
 
         def get_context_data(self, **kwargs):
@@ -460,7 +491,7 @@ class UserStoryCrear(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
 
 
 class UserStoryModificar(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
-        permission_required = 'userstory.modificar_us'
+        permission_required = 'userstory.editar_us'
         raise_exception = True
         template_name = 'userstory/userstory_modificar.html'
         model = UserStory
@@ -468,9 +499,12 @@ class UserStoryModificar(LoginRequiredMixin, PermissionRequiredMixin, UpdateView
             "nombre",
             "descripcion",
             "prioridad",
-            "estado",
-            "proyecto",
-            "sprint",
+            "fecha_ingreso",
+            "estado_us",
+            "horas_estimadas",
+            "tiempo",
+            "id_proyecto",
+            "responsable",
         ]
 
 
@@ -533,7 +567,7 @@ class RolProyectoCrear(CreateView, LoginRequiredMixin):
         :param form:
         :return: Redireccionamiento a la página de éxito
         """
-        #form.instance.proyecto = Proyecto.objects.get(id=self.kwargs["pk"])
+        # form.instance.proyecto = Proyecto.objects.get(id=self.kwargs["pk"])
         form.save()
 
         return HttpResponseRedirect(self.get_success_url())
@@ -543,6 +577,7 @@ class AgregarUsuariosRolView(LoginRequiredMixin, CreateView):
         model = RolProyectoUsuarios
         template_name = 'proyectos/roles/agregar_usuarios_rol.html'
         fields = "__all__"
+
         def dispatch(self, request, *args, **kwargs):
             get_object_or_404(Proyecto, pk=kwargs['pk'])
             print(kwargs)
@@ -595,5 +630,4 @@ class AgregarUsuariosRolView(LoginRequiredMixin, CreateView):
                 'form': form
             }
             print(form.errors)
-            return super(AgregarUsuariosRolView, self).render_to_response(self.get_context_data(**context), )
-
+            return super(AgregarUsuariosRolView, self).render_to_response(self.get_context_data(**context))
