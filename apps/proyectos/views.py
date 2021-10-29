@@ -1,10 +1,19 @@
-from django.shortcuts import render, redirect
-from .models import Proyecto, Equipo, Sprint, UserStory, RolProyecto, RolProyectoUsuarios
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
+
+from webbrowser import get
+from django.shortcuts import render, redirect, get_object_or_404
+from requests import request
+from .models import Proyecto, Equipo, Sprint, UserStory, HistorialUS, RolProyecto, RolProyectoUsuarios
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+
 from django.views.generic import DetailView
 from . import forms
+from django.contrib import messages
 from django.forms import ValidationError
-from django.http import HttpResponseRedirect
+from django.http import HttpRequest, JsonResponse
+from allauth.socialaccount.models import SocialAccount
+from django.contrib.auth.models import User
+import json
+from django.http import HttpResponse
 from django.urls import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import get_object_or_404
@@ -275,8 +284,11 @@ class EquipoBorrar(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     success_url = '/'
 
 
-class SprintCrear(CreateView):
+
+class SprintCrear(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     # Se especifica el models para crear view
+    permission_required = 'sprint.crear_sprint'
+    raise_exception = True
     model = Sprint
     # Se especifican los fields a ser desplegados
     fields = [
@@ -284,7 +296,7 @@ class SprintCrear(CreateView):
             "fecha_inicio",
             "fecha_fin",
             "duracion",
-            # "proyecto",
+            "proyecto",
             "estado",
     ]
 
@@ -301,17 +313,53 @@ class SprintCrear(CreateView):
         """
         context = super(SprintCrear, self).get_context_data(**kwargs)
         context["estados"] = Proyecto.ESTADOS
+        context["proyecto"] = self.kwargs['pkproy']
         return context
 
+    def get_success_url(self):
+        """
+        Override de la función original
 
-class SprintModificar(UpdateView):
+        Se implementa un template personalizado en caso de que el proyecto fue creado/actualizado exitosamente
+        :return: redireccionamiento hacia la página de éxito
+        """
+        URL = self.request.GET.get('next')
+        return URL
+
+    def form_valid(self, form):
+        """
+            En caso de que el form sea válido, este es guardado y se crea el objeto en la base de datos.
+            :param form:
+            :return: Redireccionamiento a la página de éxito
+        """
+        form.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, form):
+        """
+        Se recarga la página del form y se muestra en pantalla los errores que puedieron haber cometido
+        durante la creación del form.
+        :param form:
+        :return: Reload del form con errores.
+        """
+        print(form.errors)
+        context = {
+            'form': form
+        }
+        return super(SprintCrear, self).render_to_response(self.get_context_data(**context),)
+
+
+class SprintModificar(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+        template_name = 'proyectos/sprint_modificar.html'
+        permission_required = 'sprint.editar_sprint'
+        raise_exception = True
         model = Sprint
         fields = [
             "numero_sprint",
             "fecha_inicio",
             "fecha_fin",
             "duracion",
-            # "proyecto",
+            "proyecto",
             "estado",
         ]
         # Se puede especificar url exitoso
@@ -319,14 +367,58 @@ class SprintModificar(UpdateView):
         # modificando detalles
         success_url = "/"
 
+        def get_context_data(self, **kwargs):
+            """
+            Override creado para incluir más datos a los datos del contexto y poder
+            visualizarlos en el template correspondiente.
+            :param kwargs:
+            :return: contexto
+            """
+            context = super(SprintModificar, self).get_context_data(**kwargs)
+            return context
 
-class SprintEliminar(DeleteView):
-        model = Sprint
-        success_url = "/"
+        def get_success_url(self):
+            """
+            :return: el path del template personalizado.
+            """
+            return reverse('home')
+
+        def form_valid(self, form):
+            """
+                    En caso de que el form sea válido, este es guardado y se crea el objeto en la base de datos.
+                    :param form:
+                    :return: Redireccionamiento a la página de éxito
+                    """
+            form.save()
+            return HttpResponseRedirect(self.get_success_url())
+
+        def form_invalid(self, form):
+            """
+            Se recarga la página del form y se muestra en pantalla los errores que puedieron haber cometido
+            durante la creación del form.
+            :param form:
+            :return: Reload del form con errores.
+            """
+            context = {
+                'form': form
+            }
+            print(form.errors)
+            return super(SprintModificar, self).render_to_response(self.get_context_data(**context))
 
 
-class UserStoryCrear(CreateView):
+class SprintEliminar(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+    template_name = 'proyectos/sprint_eliminar.html'
+    permission_required = 'sprint.borrar_sprint'
+    raise_exception = True
+    model = Sprint
+    success_url = "/"
+
+
+class UserStoryCrear(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+        permission_required = 'userstory.crear_us'
+        raise_exception = True
         # Se especifica el models para crear view
+        template_name = 'proyectos/userstory_form.html'
         model = UserStory
         # Se especifican los fields a ser desplegados
         fields = [
@@ -367,7 +459,10 @@ class UserStoryCrear(CreateView):
             return super(UserStoryCrear, self).render_to_response(self.get_context_data(**context))
 
 
-class UserStoryModificar(UpdateView):
+class UserStoryModificar(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+        permission_required = 'userstory.modificar_us'
+        raise_exception = True
+        template_name = 'userstory/userstory_modificar.html'
         model = UserStory
         fields = [
             "nombre",
@@ -377,10 +472,12 @@ class UserStoryModificar(UpdateView):
             "proyecto",
             "sprint",
         ]
-        template_name = 'userstory/userstory_form.html'
 
 
-class UserStoryEliminar(DeleteView):
+class UserStoryEliminar(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+        permission_required = 'userstory.borrar_us'
+        raise_exception = True
+        template_name = 'proyectos/userstory_eliminar.html'
         model = UserStory
         success_url = "/"
 
