@@ -1,10 +1,17 @@
-from django.shortcuts import render, redirect
-from .models import Proyecto, Equipo, Sprint, UserStory
+from webbrowser import get
+from django.shortcuts import render, redirect, get_object_or_404
+from requests import request
+from .models import Proyecto, Equipo, Sprint, UserStory, HistorialUS
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView
 from . import forms
+from django.contrib import messages
 from django.forms import ValidationError
-from django.http import HttpResponseRedirect
+from django.http import HttpRequest, JsonResponse
+from allauth.socialaccount.models import SocialAccount
+from django.contrib.auth.models import User
+import json
+from django.http import HttpResponse
 from django.urls import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
