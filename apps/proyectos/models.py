@@ -103,8 +103,15 @@ class UserStory(models.Model):
     id_proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE, null=False)  # Proyecto al que pertenece el US
     responsable = models.ForeignKey(User, on_delete=CASCADE, blank=True)  # Miembro responsable de trabajar en el US
 
-    """def __str__(self):
-        return self.nombre"""
+    class Meta:
+        permissions = (
+            ("crear_us", "Permiso para crear un US."),
+            ("ver_us", "Permiso para ver el US."),
+            ("editar_us", "Permiso para editar el US."),
+            ("borrar_us", "Permiso para borrar el US."),
+            ("cancelar_us", "Permiso para cancelar el US."),
+            ("culminar_us", "Permiso para culminar el US."),
+        )
 
 
 class Sprint(models.Model):
@@ -129,6 +136,7 @@ class Sprint(models.Model):
     proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE, null=True)  # Proyecto al que pertenece el Sprint.
     # estado de sprint
     estado_sprint = models.CharField(choices=ESTADO_CHOICES, default=ACTIVO, max_length=15)  # Estado en que se encuentra el Sprint
+
 
     class Meta:
         permissions = (
