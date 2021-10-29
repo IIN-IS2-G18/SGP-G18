@@ -3,6 +3,8 @@ from django.dispatch import receiver
 from django.core.exceptions import FieldError
 from django.contrib.auth.models import User
 from django.db.models import CASCADE
+from datetime import date, timezone
+from django.utils import *
 # === Models for Todos app ===
 
 
@@ -29,33 +31,6 @@ class Equipo(models.Model):
         )
 
 
-class ProyectoManager(models.Manager):
-    def crear(self, **kwargs):
-        """
-        Funcion que crea el proyecto en la base de datos
-        :param kwargs: Datos del proyecto
-        :returns:  Nada si el proyecto no se creo sino la instancia del nuevo proyecto.
-        """
-        # Se verifica si se pasaron  los campos necesarios
-        # requerimientos = ['nombre', 'descripcion', 'equipo', 'fecha_inicio', 'fecha_fin', 'estado']
-        requerimientos = ['nombre', 'descripcion', 'fecha_inicio', 'fecha_fin']
-
-        for requerimiento in requerimientos:
-            if requerimiento not in kwargs.keys():
-                raise KeyError('{} es requerido.'.format(requerimiento))
-
-        proyecto = Proyecto()
-
-        proyecto.nombre = kwargs['nombre']
-        proyecto.descripcion = kwargs['descripcion']
-        proyecto.equipo = kwargs['equipo']
-        proyecto.fecha_inicio = kwargs['fecha_inicio']
-        proyecto.fecha_fin = kwargs['fecha_fin']
-        proyecto.estado = kwargs['estado']
-
-        proyecto.save()
-
-
 class Proyecto(models.Model):
         """
         El model guarda informacion de todos los proyectos del sistema.
@@ -77,22 +52,19 @@ class Proyecto(models.Model):
                    (CANCELADO, 'Cancelado')
                    ]
 
-        nombre = models.TextField('Nombre del Proyecto')
-        descripcion = models.TextField('Descripcion', max_length=181)
-        fecha_inicio = models.DateField(null=True)
-        fecha_fin = models.DateField(null=True)
+        nombre = models.CharField(max_length=150, unique=True)  # Nombre del proyecto
+        descripcion = models.TextField(max_length=250, blank=True, null=True)  # Descripcion del proyecto
+        fecha_inicio = models.DateField(null=True, blank=True)  # Fecha de inicio del proyecto
+        fecha_fin = models.DateField(null=True, blank=True)  # Fecha fin del proyecto
         equipo = models.ForeignKey(Equipo, on_delete=models.CASCADE)
         estado = models.CharField(max_length=10, choices=ESTADOS, blank=True)  # Choices de la lista de estados
+        scrum_master = models.ForeignKey(User, on_delete=models.CASCADE)  # Scrum Master del proyecto
 
-        def get_state(self):
+        def __str__(self):
             """
-            :return: retorna el estado del proyecto
+            :return: retorna el nombre del proyecto
             """
-            return self.estado
-
-        # Se linkea el Manager del proyecto con el proyecto
-        objects = models.Manager()
-        projects = ProyectoManager()
+            return self.nombre
 
         class Meta:
             permissions = (
@@ -103,51 +75,6 @@ class Proyecto(models.Model):
                 ("cancelar_proyectos", "Permiso para cancelar el proyecto."),
                 ("culminar_proyectos", "Permiso para culminar el proyecto."),
             )
-
-
-class Sprint(models.Model):
-    """
-    Tabla para el sprint
-
-    nombre: identificador para el sprint
-    fecha_inicio: fecha en donde comenzara el sprint
-    fecha_fin: fecha en donde terminara el sprint
-    duracion: cantidad de dias del sprint
-    proyecto: proyecto al cual pertenece el sprint
-    estado: estado del sprint
-    historias: historias de usuario que son asignadas al sprint
-    """
-    # Estados de un sprint
-    ACTIVO = 'ACTIVO'
-    CULMINADO = 'CULMINADO'
-    CANCELADO = 'CANCELADO'
-    ESTADO_CHOICES = [
-        (ACTIVO, 'Activo'),
-        (CULMINADO, 'Culminado'),
-        (CANCELADO, 'Cancelado')
-    ]
-
-    numero_sprint = models.PositiveIntegerField(null=True)
-    fecha_inicio = models.DateField(null=True, blank=True)
-    fecha_fin = models.DateField(null=True, blank=True)
-    duracion = models.PositiveIntegerField(null=True)
-    proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE, null=True)
-    # estado de sprint
-    estado = models.CharField(choices=ESTADO_CHOICES, default=ACTIVO, max_length=15)
-
-    class Meta:
-        permissions = (
-            ("crear_sprint", "Permiso para crear sprint."),
-            ("ver_sprint", "Permiso para ver el sprint."),
-            ("editar_sprint", "Permiso para editar el sprint."),
-            ("borrar_sprint", "Permiso para borrar el sprint."),
-            ("cancelar_sprint", "Permiso para cancelar el sprint."),
-            ("culminar_sprint", "Permiso para culminar el sprint."),
-        )
-
-
-def __str__(self):
-    return self.nombre
 
 
 class UserStory(models.Model):
@@ -165,25 +92,59 @@ class UserStory(models.Model):
         (COMPLETED, 'Completed'),
         (PRODUCTBACKLOG, 'Product Backlog')
     ]
-    # Prioridades del US
-    BAJA = 'BAJA'
-    ALTA = 'ALTA'
-    EMERGENCIA = 'EMERGENCIA'
-    PRIORIDADES = [
-        (BAJA, 'Baja'),
-        (ALTA, 'Alta'),
-        (EMERGENCIA, 'Emergencia')
-    ]
+
     # Datos
-    nombre = models.CharField(max_length=15)
-    descripcion = models.CharField(max_length=50)
-    prioridad = models.CharField(choices=PRIORIDADES, max_length=15)
-    estado_us = models.CharField(choices=ESTADO_CHOICES, default=PRODUCTBACKLOG, max_length=15)
-    sprint = models.ForeignKey(Sprint, on_delete=models.CASCADE)
+    nombre = models.CharField(max_length=15, unique=True)  # Nombre del US
+    descripcion = models.CharField(max_length=50, blank=True, null=True)  # Descripcion del US
+    prioridad = models.IntegerField(null=True, blank=True)  # Prioridad del US del 1 al 3
+    fecha_ingreso = models.DateField("Date", default=date.today)
+    estado_us = models.CharField(choices=ESTADO_CHOICES, default=PRODUCTBACKLOG, max_length=15)  # Estados del US
+    horas_estimadas = models.FloatField(null=True, blank=True)  # Horas estimadas del US
+    tiempo = models.FloatField(default=0)  # Tiempo dedicado al US en horas
+    id_proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE, null=False)  # Proyecto al que pertenece el US
+    responsable = models.ForeignKey(User, on_delete=CASCADE, blank=True)  # Miembro responsable de trabajar en el US
+
+    """def __str__(self):
+        return self.nombre"""
+
+
+class Sprint(models.Model):
+    """
+    Tabla para el sprint
+    """
+    # Estados de un sprint
+    PLANIFICANDO = 'PLANIFICANDO'
+    ACTIVO = 'ACTIVO'
+    CULMINADO = 'CULMINADO'
+    CANCELADO = 'CANCELADO'
+    ESTADO_CHOICES = [
+        (PLANIFICANDO, 'Planificando'),
+        (ACTIVO, 'Activo'),
+        (CULMINADO, 'Culminado'),
+        (CANCELADO, 'Cancelado')
+    ]
+    numero_sprint = models.PositiveIntegerField(null=True)  # Numero del Sprint
+    fecha_inicio = models.DateField(null=True, blank=True)  # Fecha de inicio del Sprint
+    fecha_fin = models.DateField(null=True, blank=True)  # Fecha de fin del Sprint
+    # duracion = models.PositiveIntegerField(null=True)
+    proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE, null=True)  # Proyecto al que pertenece el Sprint.
+    # estado de sprint
+    estado_sprint = models.CharField(choices=ESTADO_CHOICES, default=ACTIVO, max_length=15)  # Estado en que se encuentra el Sprint
 
     class Meta:
         permissions = (
-            ("crear_us", "Permiso para crear un US."),
-            ("modificar_us", "Permiso para modificar el US."),
-            ("borrar_us", "Permiso para borrar el US."),
+            ("crear_sprint", "Permiso para crear sprint."),
+            ("ver_sprint", "Permiso para ver el sprint."),
+            ("editar_sprint", "Permiso para editar el sprint."),
+            ("borrar_sprint", "Permiso para borrar el sprint."),
+            ("cancelar_sprint", "Permiso para cancelar el sprint."),
+            ("culminar_sprint", "Permiso para culminar el sprint."),
         )
+
+
+class HistorialUS(models.Model):  # Modelo para el historial del US
+    fecha = models.DateField(default=timezone.now)  # hora y fecha del registro de actividad que se relaciona al US
+    descripcion = models.CharField(max_length=250)  # Descripcion del trabajo realizado sobre el US
+    duracion = models.FloatField()  # tiempo que se dedica al trabajo sobre el US
+    id_us = models.ForeignKey(UserStory, on_delete=models.CASCADE)  # Sobre que US se realiza la acitivdad
+    id_sprint = models.ForeignKey(Sprint, on_delete=models.CASCADE, null=True)
