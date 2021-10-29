@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<script>
+            function submit(){
+                document.getElementById("form").submit()
+            }
+        </script>
+<div class="container">
+        <h4 style="text-align: center">Agregar Usuarios!</h4>
+	</div>
+<div class="form">
+    <form action="" method="post" id="form">
+            {% csrf_token %}
+
+            <p><div>
+                <label class="select" for="usuarios">Usuario:</label>
+                <select id="usuarios" name="usuarios" required>
+                    <option value="" disabled="disabled" selected="selected">Seleccionar Usuario!</option>
+                    {% for miembro in miembros %}
+                        <option value={{ miembro.id }}> {{ miembro }} </option>
+                    {% endfor %}
+                </select>
+
+            </div></p>
+            <p><div>
+                <label class="select" for="rol">Rol:</label>
+                <select id="rol" name="rol" required>
+                    <option value="" disabled="disabled" selected="selected">Seleccionar Rol!</option>
+                    {% for rol in roles %}
+                        <option value={{ rol.id }}> {{ rol.nombre }} </option>
+                    {% endfor %}
+                </select>
+
+            </div></p>
+            <p><div>
+                <label class="select" for="proyecto" hidden></label>
+                    <input type="hidden" id="proyecto" name="proyecto" value="{{ proyecto.id }}"> </input>
+            </div></p>
+        </form>
+    <button type="submit" onclick="submit()" class="btn-small blue darken-3 right">Guardar
+             <i class="material-icons left">add_circle</i></button>
+</div>
+
+{% endblock %}

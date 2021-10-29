@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<script>
+            function submit(){
+                document.getElementById("form").submit()
+            }
+        </script>
+<div class="container">
+        <h4 style="text-align: center">Crear Rol de proyecto</h4>
+	</div>
+<div class="form">
+     <form action="" method="post" id="form">
+         {% csrf_token %}
+    {{ form.as_p }}
+</form>
+    <button type="submit" onclick="submit()" class="btn-small blue darken-3 right">Guardar
+             <i class="material-icons left">add_circle</i></button>
+</div>
+
+{% endblock %}
