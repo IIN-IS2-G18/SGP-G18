@@ -1,7 +1,7 @@
 from django.db import models
 from django.dispatch import receiver
 from django.core.exceptions import FieldError
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 from django.db.models import CASCADE
 # === Models for Todos app ===
 
@@ -170,3 +170,13 @@ class UserStory(models.Model):
     prioridad = models.CharField(choices=PRIORIDADES, max_length=15)
     estado_us = models.CharField(choices=ESTADO_CHOICES, default=PRODUCTBACKLOG, max_length=15)
     sprint = models.ForeignKey(Sprint, on_delete=models.CASCADE)
+
+
+class RolProyecto(models.Model):
+    nombre = models.CharField(max_length=15)
+    permisos = models.ManyToManyField(Permission,)
+
+class RolProyectoUsuarios(models.Model):
+    rol = models.ForeignKey(RolProyecto, on_delete=CASCADE)
+    proyecto = models.ForeignKey(Proyecto, on_delete=CASCADE)
+    usuarios = models.ForeignKey(User, on_delete=CASCADE)

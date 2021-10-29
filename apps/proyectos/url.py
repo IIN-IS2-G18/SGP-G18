@@ -15,7 +15,8 @@ Including another URLconf
 """
 
 from .views import ProyectoCrear, ProyectoEditar, ProyectoBorrar, ProyectoDetalle, SprintCrear, \
-    SprintModificar, SprintEliminar, SprintEliminar, UserStoryCrear, EquipoCrear, EquipoModificar, EquipoBorrar
+    SprintModificar, SprintEliminar, SprintEliminar, UserStoryCrear, EquipoCrear, EquipoModificar, EquipoBorrar, \
+    RolProyectoCrear, AgregarUsuariosRolView
 from django.conf.urls import url
 from django.urls import path
 
@@ -24,12 +25,13 @@ urlpatterns = [
     path('<int:pk>/modificar/', ProyectoEditar.as_view(), name='proyecto_editar'),
     path('<int:pk>/eliminar/', ProyectoBorrar.as_view(), name='proyecto_borrar'),
     path('<int:pk>/detalle/', ProyectoDetalle.as_view(), name='proyecto_detalle'),
-    path('crearsprint/', SprintCrear.as_view()),
-    path('int:<pk>/modificar/', SprintModificar.as_view(), name='sprint_modificar'),
-    path('<int:pk>/eliminar/', SprintEliminar.as_view(), name='sprint_eliminar'),
+    path('<int:pkproy>/detalle/crearsprint/', SprintCrear.as_view()),
+    path('<int:pkproy>/detalle/int:<pk>/modificar/', SprintModificar.as_view(), name='sprint_modificar'),
+    path('<int:pkproy>/detalle/<int:pk>/eliminar/', SprintEliminar.as_view(), name='sprint_eliminar'),
     path('crearUS/', UserStoryCrear.as_view()),
     path('crearEquipo/', EquipoCrear.as_view(), name='equipo_crear'),
     path('<int:pk>/modificarEquipo', EquipoModificar.as_view(), name='equipo_modificar'),
     path('<int:pk>/eliminarEquipo', EquipoBorrar.as_view(), name='equipo_eliminar'),
-
+    path('roles/crear/', RolProyectoCrear.as_view(),name='rolproyecto_crear'),
+    path('<int:pk>/roles/agregarusuarios', AgregarUsuariosRolView.as_view(),name='rolproyecto_agregar')
 ]

@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm, ModelChoiceField, SelectDateWidget
 from django.contrib.auth.models import User
-from .models import Proyecto, Equipo, Sprint, UserStory
+from .models import Proyecto, Equipo, Sprint, UserStory, RolProyecto
 from django.http import JsonResponse
 
 
@@ -54,3 +54,17 @@ class UserStoryForm(forms.ModelForm):
             "prioridad",
             # "sprint",
         ]
+
+
+class RolProyectoForm(forms.ModelForm):
+    class Meta:
+        model = RolProyecto
+        fields = [
+            "nombre",
+            "permisos"
+        ]
+
+
+class AgregarUsuariosRolForm(forms.ModelForm):
+    class Meta:
+        fields = ["usuarios","proyecto","rol"]

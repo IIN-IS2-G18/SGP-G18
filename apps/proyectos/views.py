@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect
-from .models import Proyecto, Equipo, Sprint, UserStory
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from .models import Proyecto, Equipo, Sprint, UserStory, RolProyecto, RolProyectoUsuarios
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.views.generic import DetailView
 from . import forms
 from django.forms import ValidationError
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.shortcuts import get_object_or_404
 
 
 class ProyectoCrear(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -382,3 +383,120 @@ class UserStoryModificar(UpdateView):
 class UserStoryEliminar(DeleteView):
         model = UserStory
         success_url = "/"
+
+
+class RolProyectoCrear(CreateView, LoginRequiredMixin):
+    model = RolProyecto
+    template_name = 'proyectos/roles/rolproyecto_form.html'
+    fields = [
+        "nombre",
+        "permisos"
+    ]
+    '''
+        def dispatch(self, request, *args, **kwargs):
+            get_object_or_404(Proyecto, pk=kwargs['pk'])
+            return super().dispatch(request, *args, **kwargs)
+    '''
+    def get_context_data(self, **kwargs):
+        """
+
+        Override de la función original, agregamos el query de todas las opciones para los estados.
+
+        El contexto puede ser accedido directamente en el template de proyecto_form.html
+        Agregamos al context para poder colocarlos como opciones en la lista desplegable.
+
+        :param kwargs:
+        :return: contexto
+        """
+        context = super(RolProyectoCrear, self).get_context_data(**kwargs)
+        return context
+
+    def form_invalid(self, form):
+        """
+        Se recarga la página del form y se muestra en pantalla los errores que puedieron haber cometido
+        durante la creación del form.
+        :param form:
+        :return: Reload del form con errores.
+        """
+        context = {
+            'form': form
+        }
+        print(form.errors)
+        return super(RolProyectoCrear, self).render_to_response(self.get_context_data(**context))
+
+    def get_success_url(self):
+        """
+        :return: el path del template personalizado.
+        """
+        return reverse('home')
+
+    def form_valid(self, form):
+        """
+        En caso de que el form sea válido, este es guardado y se crea el objeto en la base de datos.
+        :param form:
+        :return: Redireccionamiento a la página de éxito
+        """
+        #form.instance.proyecto = Proyecto.objects.get(id=self.kwargs["pk"])
+        form.save()
+
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class AgregarUsuariosRolView(LoginRequiredMixin, CreateView):
+        model = RolProyectoUsuarios
+        template_name = 'proyectos/roles/agregar_usuarios_rol.html'
+        fields = "__all__"
+        def dispatch(self, request, *args, **kwargs):
+            get_object_or_404(Proyecto, pk=kwargs['pk'])
+            print(kwargs)
+            return super().dispatch(request, *args, **kwargs)
+
+        def get_context_data(self, **kwargs):
+            """
+
+            Override de la función original, agregamos el query de todas las opciones para los estados.
+
+            El contexto puede ser accedido directamente en el template de proyecto_form.html
+            Agregamos al context para poder colocarlos como opciones en la lista desplegable.
+
+            :param kwargs:
+            :return: contexto
+            """
+            context = super(AgregarUsuariosRolView, self).get_context_data(**kwargs)
+            proyecto = get_object_or_404(Proyecto, pk=self.kwargs["pk"])
+            context["roles"] = RolProyecto.objects.all()
+            context["miembros"] = proyecto.equipo.usuarios.all()
+            context["proyecto"] = proyecto
+            return context
+
+        def get_success_url(self):
+            """
+            Override de la función original
+
+            Se implementa un template personalizado en caso de que el proyecto fue creado/actualizado exitosamente
+            :return: redireccionamiento hacia la página de éxito
+            """
+            return reverse('home')
+
+        def form_valid(self, form):
+            """
+            En caso de que el form sea válido, este es guardado y se crea el objeto en la base de datos.
+            :param form:
+            :return: Redireccionamiento a la página de éxito
+            """
+            form.save()
+            return HttpResponseRedirect(self.get_success_url())
+
+        def form_invalid(self, form):
+            """
+            Se recarga la página del form y se muestra en pantalla los errores que puedieron haber cometido
+            durante la creación del form.
+            :param form:
+            :return: Reload del form con errores.
+            """
+            context = {
+                'form': form
+            }
+            print(form.errors)
+            return super(AgregarUsuariosRolView, self).render_to_response(self.get_context_data(**context), )
+
