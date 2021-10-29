@@ -2,7 +2,7 @@ from django import forms
 from django.db.models import Model
 from django.forms import ModelForm, ModelChoiceField, SelectDateWidget, TextInput
 from django.contrib.auth.models import User
-from .models import Proyecto, Equipo, Sprint, UserStory, RolProyecto
+from .models import Proyecto, Equipo, Sprint, UserStory, RolProyecto, HistorialUS
 from django.http import JsonResponse
 
 

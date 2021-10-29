@@ -15,12 +15,9 @@ Including another URLconf
 """
 
 from .views import ProyectoCrear, ProyectoEditar, ProyectoBorrar, ProyectoDetalle, SprintCrear, \
-<<<<<<< HEAD
     SprintModificar, SprintEliminar, SprintEliminar, UserStoryCrear, EquipoCrear, EquipoModificar, EquipoBorrar, \
     RolProyectoCrear, AgregarUsuariosRolView
-=======
-    SprintModificar, SprintEliminar, UserStoryCrear, EquipoCrear, EquipoModificar, EquipoBorrar
->>>>>>> 230e3c1fa1f2ea90b4f4a544b5e96aa936ece6aa
+
 from django.conf.urls import url
 from django.urls import path
 
