@@ -3,8 +3,9 @@
 {% block content %}
 
 <form method="post">
+    <h4>Modificar Sprint</h4>
     {% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" value="Update">
+    <input type="submit" value="Guardar">
 </form>
 {% endblock %}
