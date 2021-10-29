@@ -196,3 +196,9 @@ class RolProyectoForm(forms.ModelForm):
 class AgregarUsuariosRolForm(forms.ModelForm):
     class Meta:
         fields = ["usuarios","proyecto","rol"]
+
+
+class QuitarUsuariosRolForm(forms.Form):
+    class Meta:
+        fields = ["rol"]
+

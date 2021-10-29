@@ -16,7 +16,7 @@ Including another URLconf
 
 from .views import ProyectoCrear, ProyectoEditar, ProyectoBorrar, ProyectoDetalle, SprintCrear, \
     SprintModificar, SprintEliminar, SprintEliminar, UserStoryCrear, EquipoCrear, EquipoModificar, EquipoBorrar, \
-    RolProyectoCrear, AgregarUsuariosRolView
+    RolProyectoCrear, AgregarUsuariosRolView, AgregarUsuariosRolBorrar
 
 from django.conf.urls import url
 from django.urls import path
@@ -34,7 +34,8 @@ urlpatterns = [
     path('<int:pk>/modificarEquipo', EquipoModificar.as_view(), name='equipo_modificar'),
     path('<int:pk>/eliminarEquipo', EquipoBorrar.as_view(), name='equipo_eliminar'),
 
-    path('roles/crear/', RolProyectoCrear.as_view(),name='rolproyecto_crear'),
-    path('<int:pk>/roles/agregarusuarios', AgregarUsuariosRolView.as_view(),name='rolproyecto_agregar')
+    path('roles/crear/', RolProyectoCrear.as_view(), name='rolproyecto_crear'),
+    path('<int:pk>/roles/agregarusuarios', AgregarUsuariosRolView.as_view(), name='rolproyecto_agregar'),
+    path('<int:pkproy>/roles/<int:pk>/quitarrol', AgregarUsuariosRolBorrar.as_view(), name='rolproyecto_quitar')
 
 ]

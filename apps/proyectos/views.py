@@ -3,13 +3,13 @@ from webbrowser import get
 from django.shortcuts import render, redirect, get_object_or_404
 from requests import request
 from .models import Proyecto, Equipo, Sprint, UserStory, HistorialUS, RolProyecto, RolProyectoUsuarios
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 
 from django.views.generic import DetailView
 from . import forms
 from django.contrib import messages
 from django.forms import ValidationError
-from django.http import HttpRequest, JsonResponse
+from django.http import HttpRequest, JsonResponse, HttpResponseRedirect
 from allauth.socialaccount.models import SocialAccount
 from django.contrib.auth.models import User
 import json
@@ -76,6 +76,7 @@ class ProyectoCrear(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         context = {
             'form': form
         }
+        print(form.errors)
         return super(ProyectoCrear, self).render_to_response(self.get_context_data(**context),)
 
 
@@ -545,7 +546,6 @@ class AgregarUsuariosRolView(LoginRequiredMixin, CreateView):
         fields = "__all__"
         def dispatch(self, request, *args, **kwargs):
             get_object_or_404(Proyecto, pk=kwargs['pk'])
-            print(kwargs)
             return super().dispatch(request, *args, **kwargs)
 
         def get_context_data(self, **kwargs):
@@ -581,7 +581,12 @@ class AgregarUsuariosRolView(LoginRequiredMixin, CreateView):
             :param form:
             :return: Redireccionamiento a la página de éxito
             """
+
+            usuario = form.cleaned_data["usuarios"]
+            RolProyectoUsuarios.objects.filter(usuarios=usuario, rol=form.cleaned_data["rol"]).delete()
+            usuario.user_permissions.set(usuario.user_permissions.all() | form.cleaned_data["rol"].permisos.all())
             form.save()
+            usuario.save()
             return HttpResponseRedirect(self.get_success_url())
 
         def form_invalid(self, form):
@@ -597,3 +602,104 @@ class AgregarUsuariosRolView(LoginRequiredMixin, CreateView):
             print(form.errors)
             return super(AgregarUsuariosRolView, self).render_to_response(self.get_context_data(**context), )
 
+
+class AgregarUsuariosRolView(LoginRequiredMixin, CreateView):
+    model = RolProyectoUsuarios
+    template_name = 'proyectos/roles/agregar_usuarios_rol.html'
+    fields = "__all__"
+
+    def dispatch(self, request, *args, **kwargs):
+        get_object_or_404(Proyecto, pk=kwargs['pk'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        """
+
+        Override de la función original, agregamos el query de todas las opciones para los estados.
+
+        El contexto puede ser accedido directamente en el template de proyecto_form.html
+        Agregamos al context para poder colocarlos como opciones en la lista desplegable.
+
+        :param kwargs:
+        :return: contexto
+        """
+        context = super(AgregarUsuariosRolView, self).get_context_data(**kwargs)
+        proyecto = get_object_or_404(Proyecto, pk=self.kwargs["pk"])
+        context["roles"] = RolProyecto.objects.all()
+        context["miembros"] = proyecto.equipo.usuarios.all()
+        context["proyecto"] = proyecto
+        return context
+
+    def get_success_url(self):
+        """
+        Override de la función original
+
+        Se implementa un template personalizado en caso de que el proyecto fue creado/actualizado exitosamente
+        :return: redireccionamiento hacia la página de éxito
+        """
+        return reverse('home')
+
+    def form_valid(self, form):
+        """
+        En caso de que el form sea válido, este es guardado y se crea el objeto en la base de datos.
+        :param form:
+        :return: Redireccionamiento a la página de éxito
+        """
+
+        usuario = form.cleaned_data["usuarios"]
+        RolProyectoUsuarios.objects.filter(usuarios=usuario, rol=form.cleaned_data["rol"]).delete()
+        usuario.user_permissions.set(usuario.user_permissions.all() | form.cleaned_data["rol"].permisos.all())
+        form.save()
+        usuario.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, form):
+        """
+        Se recarga la página del form y se muestra en pantalla los errores que puedieron haber cometido
+        durante la creación del form.
+        :param form:
+        :return: Reload del form con errores.
+        """
+        context = {
+            'form': form
+        }
+        print(form.errors)
+        return super(AgregarUsuariosRolView, self).render_to_response(self.get_context_data(**context), )
+
+
+class AgregarUsuariosRolBorrar(LoginRequiredMixin, DeleteView):
+    template_name = 'proyectos/roles/agregar_usuarios_rol_eliminar.html'
+    success_url = "/"
+    model = RolProyectoUsuarios
+
+    def get_context_data(self, **kwargs):
+        """
+
+        Override de la función original, agregamos el query de todas las opciones para los estados.
+
+        El contexto puede ser accedido directamente en el template de proyecto_form.html
+        Agregamos al context para poder colocarlos como opciones en la lista desplegable.
+
+        :param kwargs:
+        :return: contexto
+        """
+        context = super(AgregarUsuariosRolBorrar, self).get_context_data(**kwargs)
+        context["rol"] = self.object.rol
+        context["usuario"] = self.object.usuarios
+        context["object"] = self.object
+        return context
+
+    def delete(self, *args, **kwargs):
+        self.object = self.get_object()
+        ids = RolProyectoUsuarios.objects.filter(usuarios=self.object.usuarios).exclude(pk=self.object.id).values_list(
+            'rol', flat=True)
+        roles = RolProyecto.objects.filter(id__in=ids)
+        permissions = []
+        for rol in roles:
+            permisos = rol.permisos.all()
+            for permiso in permisos:
+                permissions.append(permiso)
+        usuario = self.object.usuarios
+        usuario.user_permissions.set(permissions)
+        usuario.save()
+        return super(AgregarUsuariosRolBorrar, self).delete(*args, **kwargs)

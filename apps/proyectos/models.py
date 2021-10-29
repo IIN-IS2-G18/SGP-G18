@@ -58,7 +58,6 @@ class Proyecto(models.Model):
         fecha_fin = models.DateField(null=True, blank=True)  # Fecha fin del proyecto
         equipo = models.ForeignKey(Equipo, on_delete=models.CASCADE)
         estado = models.CharField(max_length=10, choices=ESTADOS, blank=True)  # Choices de la lista de estados
-        scrum_master = models.ForeignKey(User, on_delete=models.CASCADE)  # Scrum Master del proyecto
 
         def __str__(self):
             """
@@ -151,6 +150,12 @@ class HistorialUS(models.Model):  # Modelo para el historial del US
 class RolProyecto(models.Model):
     nombre = models.CharField(max_length=15)
     permisos = models.ManyToManyField(Permission,)
+
+    def __str__(self):
+        """
+        :return: retorna el nombre del proyecto
+        """
+        return self.nombre
 
 class RolProyectoUsuarios(models.Model):
     rol = models.ForeignKey(RolProyecto, on_delete=CASCADE)
